@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:52:16 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/03 18:37:50 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/04 17:42:36 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,51 +30,20 @@ int	init_forks(t_data *data)
 	return (0);
 }
 
-int allocate_philos(t_data *data)
+int	allocate_philos(t_data *data)
 {
-    data->philo = (t_philo *)malloc(sizeof(t_philo) * data->num_philo);
-    if (!data->philo)
-        return (write(2, "Error allocating memory for philosophers.\n", 42), 1);
-    return (0);
-}
-
-int init_philos(t_data *data)
-{
-    int i;
-
-    if (allocate_philos(data) != 0)
-        return (1);
-    i = 0;
-    while (i < data->num_philo)
-    {
-        data->philo[i].id = i + 1;
-        data->philo[i].last_meal = data->time_start;
-        data->philo[i].meals = 0;
-        if (i == 0)
-        {
-            data->philo[i].left_fork = &data->forks[data->num_philo - 1];
-            data->philo[i].right_fork = &data->forks[i];
-        }
-        else
-        {
-            data->philo[i].left_fork = &data->forks[i - 1];
-            data->philo[i].right_fork = &data->forks[i];
-        }
-        data->philo[i].data = data;
-        data->philo[i].ate_enough = false;
-		data->philo_satisfied = 0;
-        i++;
-    }
-    return (0);
-}
-
-/* int	init_philos(t_data *data)
-{
-	int	i;
-
 	data->philo = (t_philo *)malloc(sizeof(t_philo) * data->num_philo);
 	if (!data->philo)
 		return (write(2, "Error allocating memory for philosophers.\n", 42), 1);
+	return (0);
+}
+
+int	init_philos(t_data *data)
+{
+	int	i;
+
+	if (allocate_philos(data) != 0)
+		return (1);
 	i = 0;
 	while (i < data->num_philo)
 	{
@@ -93,10 +62,11 @@ int init_philos(t_data *data)
 		}
 		data->philo[i].data = data;
 		data->philo[i].ate_enough = false;
+		//data->philo_satisfied = 0;
 		i++;
 	}
 	return (0);
-} */
+}
 
 int	init_forks_and_philos(t_data *data)
 {

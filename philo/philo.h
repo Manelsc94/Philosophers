@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 18:57:02 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/03 19:04:39 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/10 19:58:39 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef enum e_status
 typedef struct s_philo
 {
 	int				id;
-	int			meals;
+	int				meals;
 
 	long			last_meal;
 
@@ -58,6 +58,8 @@ typedef struct s_data
 	int				philo_satisfied;
 
 	long			time_start;
+
+	bool			*has_eaten;
 
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_lock;

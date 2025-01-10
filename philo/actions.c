@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:31:20 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/03 19:05:15 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/10 20:03:15 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,29 @@ void	release_forks(t_philo *philo)
 	pthread_mutex_unlock(philo->left_fork);
 }
 
-bool	eat(t_philo *philo)
+// Modify the eat function in actions.c to mark when a philosopher eats:
+bool    eat(t_philo *philo)
+{
+    pthread_mutex_lock(&philo->data->print_lock);
+    philo->last_meal = get_timestamp();
+    pthread_mutex_unlock(&philo->data->print_lock);
+    log_action(philo->data, philo->id, "is eating");
+    
+    // Mark that this philosopher has eaten
+    pthread_mutex_lock(&philo->data->stop_lock);
+    philo->data->has_eaten[philo->id - 1] = true;
+    pthread_mutex_unlock(&philo->data->stop_lock);
+    
+    if (!sleep_for(philo->data->supper_time, philo->data))
+        return (release_forks(philo), false);
+    pthread_mutex_lock(&philo->data->stop_lock);
+    philo->meals++;
+    pthread_mutex_unlock(&philo->data->stop_lock);
+    release_forks(philo);
+    return (true);
+}
+
+/* bool	eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->print_lock);
 	philo->last_meal = get_timestamp();
@@ -64,23 +86,10 @@ bool	eat(t_philo *philo)
 		return (release_forks(philo), false);
 	pthread_mutex_lock(&philo->data->stop_lock);
 	philo->meals++;
-/* 	if (philo->data->meals_needed != -1 && philo->meals
-		>= philo->data->meals_needed)
-	{
-		philo->ate_enough = true;
-		philo->data->philo_satisfied++;
-		if (philo->data->philo_satisfied >= philo->data->num_philo)
-		{
-			philo->data->stop_sim = 1;
-			pthread_mutex_unlock(&philo->data->stop_lock);
-			release_forks(philo);
-			return (false);
-		}
-	} */
 	pthread_mutex_unlock(&philo->data->stop_lock);
 	release_forks(philo);
 	return (true);
-}
+} */
 
 bool	take_forks(t_philo *philo)
 {

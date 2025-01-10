@@ -6,13 +6,43 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:27:07 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/03 19:10:47 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/10 20:02:50 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	check_philo_satisfaction(t_philo *philo)
+// Add this helper function in checks.c:
+bool    check_all_eaten_recursive(t_data *data, int i)
+{
+    if (i >= data->num_philo)
+        return (true);
+    if (!data->has_eaten[i])
+        return (false);
+    return (check_all_eaten_recursive(data, i + 1));
+}
+
+// Replace the check_philo_satisfaction function in checks.c:
+bool    check_philo_satisfaction(t_philo *philo)
+{
+    pthread_mutex_lock(&philo->data->stop_lock);
+    if (philo->data->meals_needed != -1 && philo->meals >= philo->data->meals_needed)
+    {
+        philo->ate_enough = true;
+        philo->data->has_eaten[philo->id - 1] = true;
+        
+        if (check_all_eaten_recursive(philo->data, 0))
+        {
+            philo->data->stop_sim = 1;
+            pthread_mutex_unlock(&philo->data->stop_lock);
+            return (true);
+        }
+    }
+    pthread_mutex_unlock(&philo->data->stop_lock);
+    return (false);
+}
+
+/* bool	check_philo_satisfaction(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->stop_lock);
 	if (philo->data->meals_needed != -1 && philo->meals
@@ -24,13 +54,13 @@ bool	check_philo_satisfaction(t_philo *philo)
 		{
 			philo->data->stop_sim = 1;
 			pthread_mutex_unlock(&philo->data->stop_lock);
-			//release_forks(philo);
 			return (true);
 		}
 	}
 	pthread_mutex_unlock(&philo->data->stop_lock);
 	return (false);
-}
+} */
+
 bool	check_philo_death(t_data *data, int i)
 {
 	long	current_time;

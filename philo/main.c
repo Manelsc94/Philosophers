@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 18:57:09 by mde-agui          #+#    #+#             */
-/*   Updated: 2024/12/31 02:56:49 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/10 20:06:21 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	clean_sim(t_data *data)
 	free(data->forks);
 	pthread_mutex_destroy(&data->print_lock);
 	pthread_mutex_destroy(&data->stop_lock);
+	free(data->has_eaten);
 	free(data->philo);
 }
 
@@ -64,7 +65,7 @@ static int	parser(t_data *data, int argc, char **argv)
 		return (1);
 	data->num_philo = ft_atoi(argv[1]);
 	if (data->num_philo > 200)
-		return(write(2, "That's way too many philosopher to feed!\n", 41), 1);
+		return (write(2, "That's way too many philosopher to feed!\n", 41), 1);
 	data->death_time = ft_atoi(argv[2]);
 	data->supper_time = ft_atoi(argv[3]);
 	data->sleepy_time = ft_atoi(argv[4]);
@@ -80,6 +81,29 @@ static int	parser(t_data *data, int argc, char **argv)
 
 int	init_sim(t_data *data, int argc, char **argv)
 {
+    if (parser(data, argc, argv))
+        return (write(2, "ERROR: Invalid args\n", 20), 1);
+    data->time_start = get_timestamp();
+    if (init_forks_and_philos(data) != 0)
+        return (1);
+    data->stop_sim = 0;
+    data->philo_satisfied = 0;
+    data->has_eaten = (bool *)malloc(data->num_philo * sizeof(bool));
+    if (!data->has_eaten)
+        return (write(2, "ERROR: Failed to allocate has_eaten array\n", 41), 1);
+    int i = 0;
+    while (i < data->num_philo)
+    {
+        data->has_eaten[i] = false;
+        i++;
+    }
+    if (init_mutexes(data) != 0)
+        return (1);
+    return (0);
+}
+
+/* int	init_sim(t_data *data, int argc, char **argv)
+{
 	if (parser(data, argc, argv))
 		return (write(2, "ERROR: Invalid args\n", 20), 1);
 	data->time_start = get_timestamp();
@@ -90,7 +114,7 @@ int	init_sim(t_data *data, int argc, char **argv)
 	if (init_mutexes(data) != 0)
 		return (1);
 	return (0);
-}
+} */
 
 int	main(int argc, char **argv)
 {
