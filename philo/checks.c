@@ -6,51 +6,33 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:27:07 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/10 20:02:50 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:39:42 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-// Add this helper function in checks.c:
-bool    check_all_eaten_recursive(t_data *data, int i)
+bool	check_all_eaten(t_data *data, int i)
 {
-    if (i >= data->num_philo)
-        return (true);
-    if (!data->has_eaten[i])
-        return (false);
-    return (check_all_eaten_recursive(data, i + 1));
+	if (i >= data->num_philo)
+		return (true);
+	if (!data->has_eaten[i])
+		return (false);
+	return (check_all_eaten(data, i + 1));
 }
 
-// Replace the check_philo_satisfaction function in checks.c:
-bool    check_philo_satisfaction(t_philo *philo)
+bool	check_philo_satisfaction(t_philo *philo)
 {
-    pthread_mutex_lock(&philo->data->stop_lock);
-    if (philo->data->meals_needed != -1 && philo->meals >= philo->data->meals_needed)
-    {
-        philo->ate_enough = true;
-        philo->data->has_eaten[philo->id - 1] = true;
-        
-        if (check_all_eaten_recursive(philo->data, 0))
-        {
-            philo->data->stop_sim = 1;
-            pthread_mutex_unlock(&philo->data->stop_lock);
-            return (true);
-        }
-    }
-    pthread_mutex_unlock(&philo->data->stop_lock);
-    return (false);
-}
+	bool	all_eaten;
 
-/* bool	check_philo_satisfaction(t_philo *philo)
-{
 	pthread_mutex_lock(&philo->data->stop_lock);
 	if (philo->data->meals_needed != -1 && philo->meals
 		>= philo->data->meals_needed)
 	{
 		philo->ate_enough = true;
-		philo->data->philo_satisfied++;
-		if (philo->data->philo_satisfied >= philo->data->num_philo)
+		philo->data->has_eaten[philo->id - 1] = true;
+		all_eaten = check_all_eaten(philo->data, 0);
+		if (all_eaten)
 		{
 			philo->data->stop_sim = 1;
 			pthread_mutex_unlock(&philo->data->stop_lock);
@@ -59,7 +41,7 @@ bool    check_philo_satisfaction(t_philo *philo)
 	}
 	pthread_mutex_unlock(&philo->data->stop_lock);
 	return (false);
-} */
+}
 
 bool	check_philo_death(t_data *data, int i)
 {
@@ -72,10 +54,13 @@ bool	check_philo_death(t_data *data, int i)
 	if (time_since_last_meal > data->death_time)
 	{
 		pthread_mutex_lock(&data->stop_lock);
-		data->stop_sim = 1;
+		if (!data->stop_sim)
+		{
+			data->stop_sim = 1;
+			printf("\033[31m%ld %d died\033[0m\n",
+				current_time - data->time_start, data->philo[i].id);
+		}
 		pthread_mutex_unlock(&data->stop_lock);
-		printf("\033[31m%ld %d died\033[0m\n",
-			current_time - data->time_start, data->philo[i].id);
 		pthread_mutex_unlock(&data->print_lock);
 		return (true);
 	}
@@ -104,7 +89,6 @@ void	*check_pulse(void *args)
 		if (should_stop_sim(data))
 			return (NULL);
 		check_philos(data, 0);
-		usleep(1000);
 	}
 	return (NULL);
 }

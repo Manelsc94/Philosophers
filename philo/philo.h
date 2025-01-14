@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 18:57:02 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/10 19:58:39 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:40:33 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,23 +76,28 @@ int		init_sim(t_data *data, int argc, char **argv);
 
 //init.c
 int		init_forks(t_data *data);
+int		allocate_philos(t_data *data);
 int		init_philos(t_data *data);
 int		init_forks_and_philos(t_data *data);
 int		init_mutexes(t_data *data);
 
 //table.c
+void	release_forks(t_philo *philo);
+bool	sleep_for(long ms, t_data *data);
 bool	should_stop_sim(t_data *data);
 bool	should_stop(t_philo *philo);
 void	*philo_supper(void *args);
 
 //actions.c
-bool	sleep_for(long ms, t_data *data);
-bool	sleep_and_think(t_philo *philo);
-void	release_forks(t_philo *philo);
-bool	eat(t_philo *philo);
+bool	thinking(t_philo *philo);
+bool	sleeping(t_philo *philo);
+bool	eating(t_philo *philo);
+bool	lock_forks(t_philo *philo, pthread_mutex_t *ff, pthread_mutex_t *sf);
 bool	take_forks(t_philo *philo);
 
 //checks.c
+bool	check_all_eaten(t_data *data, int i);
+bool	check_philo_satisfaction(t_philo *philo);
 bool	check_philo_death(t_data *data, int i);
 void	check_philos(t_data *data, int i);
 void	*check_pulse(void *args);

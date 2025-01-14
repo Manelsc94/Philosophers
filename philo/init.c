@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:52:16 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/04 17:42:36 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:14:16 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ int	init_philos(t_data *data)
 		}
 		data->philo[i].data = data;
 		data->philo[i].ate_enough = false;
-		//data->philo_satisfied = 0;
 		i++;
 	}
 	return (0);

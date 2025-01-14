@@ -4,7 +4,7 @@
 
 CC			=	cc
 CFLAGS		=	-Wall -Wextra -Werror
-#CFLAGS += -fsanitize=thread
+CFLAGS += -fsanitize=thread
 #CFLAGS += -fsanitize=address
 
 #==============================================================================#

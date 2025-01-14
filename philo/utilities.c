@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:31:44 by mde-agui          #+#    #+#             */
-/*   Updated: 2024/12/30 01:25:05 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:15:57 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	log_action(t_data *data, int id, const char *action)
 	const char	*color;
 
 	pthread_mutex_lock(&data->stop_lock);
-	if (data->stop_sim)
+	if (data->stop_sim && ft_strcmp(action, "is sleeping") == 0)
 	{
 		pthread_mutex_unlock(&data->stop_lock);
 		return ;

@@ -6,11 +6,35 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:11:48 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/10 19:44:56 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:34:52 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	release_forks(t_philo *philo)
+{
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
+}
+
+bool	sleep_for(long ms, t_data *data)
+{
+	long	start;
+
+	start = get_timestamp();
+	while (get_timestamp() - start < ms)
+	{
+		pthread_mutex_lock(&data->stop_lock);
+		if (data->stop_sim)
+		{
+			pthread_mutex_unlock(&data->stop_lock);
+			return (false);
+		}
+		pthread_mutex_unlock(&data->stop_lock);
+	}
+	return (true);
+}
 
 bool	should_stop_sim(t_data *data)
 {
@@ -53,9 +77,11 @@ void	*philo_supper(void *args)
 			return (NULL);
 		if (!take_forks(philo))
 			return (NULL);
-		if (!eat(philo))
+		if (!eating(philo))
 			return (NULL);
-		if (!sleep_and_think(philo))
+		if (!sleeping(philo))
+			return (NULL);
+		if (!thinking(philo))
 			return (NULL);
 	}
 	return (NULL);
