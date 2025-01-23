@@ -6,7 +6,7 @@
 /*   By: mde-agui <mde-agui@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 17:27:07 by mde-agui          #+#    #+#             */
-/*   Updated: 2025/01/14 15:39:42 by mde-agui         ###   ########.fr       */
+/*   Updated: 2025/01/23 18:21:19 by mde-agui         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ bool	check_philo_death(t_data *data, int i)
 {
 	long	current_time;
 	long	time_since_last_meal;
+	bool	is_dead;
 
 	pthread_mutex_lock(&data->print_lock);
 	current_time = get_timestamp();
@@ -59,10 +60,11 @@ bool	check_philo_death(t_data *data, int i)
 			data->stop_sim = 1;
 			printf("\033[31m%ld %d died\033[0m\n",
 				current_time - data->time_start, data->philo[i].id);
+			is_dead = true;
 		}
 		pthread_mutex_unlock(&data->stop_lock);
 		pthread_mutex_unlock(&data->print_lock);
-		return (true);
+		return (is_dead);
 	}
 	pthread_mutex_unlock(&data->print_lock);
 	return (false);
@@ -89,6 +91,7 @@ void	*check_pulse(void *args)
 		if (should_stop_sim(data))
 			return (NULL);
 		check_philos(data, 0);
+		usleep(100);
 	}
 	return (NULL);
 }
